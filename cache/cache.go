@@ -1,7 +1,7 @@
-package source
+package cache
 
 import (
-	"source/lru"
+	"cache/lru"
 	"sync"
 )
 
