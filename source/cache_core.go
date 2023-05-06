@@ -63,7 +63,7 @@ func (g *Group) Get(key string) (ByteView, error) {
 	}
 
 	if v, ok := g.mainCache.get(key); ok {
-		log.Println("[GeeCache] hit")
+		log.Println("[Cache-Go] hit")
 		return v, nil
 	}
 
