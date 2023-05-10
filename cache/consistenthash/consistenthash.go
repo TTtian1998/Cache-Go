@@ -12,9 +12,9 @@ type Hash func(data []byte) uint32
 // Map contains all hashed keys
 type Map struct {
 	hash     Hash
-	replicas int
-	keys     []int // Sorted
-	hashMap  map[int]string
+	replicas int            //nums of each virtual node
+	keys     []int          //hash ring
+	hashMap  map[int]string //Mapping of virtual nodes and real nodes; key: hash of v-node,value:name of r-node
 }
 
 // New creates a Map instance
@@ -30,7 +30,10 @@ func New(replicas int, fn Hash) *Map {
 	return m
 }
 
-// Add adds some keys to the hash.
+// Add real nodes in the hash.
+// key:name of real node
+// For each real node, calculate the hash value by using strconv.Itoa(i) + key,
+// then create Map.replicas num of virtual nodes and process mapping association
 func (m *Map) Add(keys ...string) {
 	for _, key := range keys {
 		for i := 0; i < m.replicas; i++ {
@@ -39,10 +42,11 @@ func (m *Map) Add(keys ...string) {
 			m.hashMap[hash] = key
 		}
 	}
+	//sort in hash ring
 	sort.Ints(m.keys)
 }
 
-// Get gets the closest item in the hash to the provided key.
+// Get gets the closest r-node in the hash to the provided key.
 func (m *Map) Get(key string) string {
 	if len(m.keys) == 0 {
 		return ""
@@ -54,5 +58,6 @@ func (m *Map) Get(key string) string {
 		return m.keys[i] >= hash
 	})
 
+	//idx%len(m.keys) to solve situation that idx == len(m.keys), it represents 0
 	return m.hashMap[m.keys[idx%len(m.keys)]]
 }
