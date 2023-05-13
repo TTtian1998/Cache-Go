@@ -1,4 +1,12 @@
-FROM ubuntu:latest
-LABEL authors="tzx"
+FROM golang:1.20
+LABEL authors="twoCookie"
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /app
+
+COPY . /app
+
+RUN go build -o main .
+
+EXPOSE 9999
+
+ENTRYPOINT ["/app/main"]
